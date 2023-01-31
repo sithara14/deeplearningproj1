@@ -1,3 +1,4 @@
+
 import numpy as np
 import sys,random, math
 """
@@ -19,14 +20,12 @@ class Neuron:
         self.activation = activation
         self.input_num = input_num
         self.lr = lr
-        if weights == None:
-            array=[]
-            for i in range(input_num) :
-                x = random.random()
-                array[i] = x 
-            weights = array
-        else: 
-            self.weights = weights
+        self.weights = weights
+        #setting up the output and input history
+        self.bias_weight = 1    
+        self.input_history=[]
+        self.output=0
+        
 
 
         print('constructor')    
@@ -42,21 +41,34 @@ class Neuron:
     
         print('activate')   
         
-    #Calculate the output of the neuron should save the input and output for back-propagation.   
+    #Calculate the output of the neuron should save the input and output for back-propagation. 
+    # is input coming in as an array, if so we need a summation function as sum(xi+wi)+b  
+    #if input is a multi demsionalarray then we can loop through the array and get the summation
     def calculate(self,input):
-        output=[]
-        sum=0
-        for x in input:
+        #if weights are none fill with random numbers
+        if weights == None:
+            array=[]
+            for i in range(input_num) :
+                x = random.random()
+                array[i] = x 
+            self.weights = array
+         
             
-        return self.activate
+        
+        self.input_history = input
+        weighted_input= np.dot(input, self.weights) + self.bias_weight
+        self.output= self.activate(self,weighted_input)
+        return self.output
 
 
-        print('calculate')
+    print('calculate')
 
     #This method returns the derivative of the activation function with respect to the net   
     def activationderivative(self):
-        if self.activation= "linear" then return 1
-        if self.activate = "logistic" then return f(x)(1-f(x))
+        if self.activation == 0:
+            return 1
+        elif self.activate == 1: 
+            return (self.activate(self,self.sum) * (1 - self.activate(self,self.sum)))
         print('activationderivative')   
     
     #This method calculates the partial derivative for each weight and returns the delta*w to be used in the previous layer
@@ -68,7 +80,8 @@ class Neuron:
         print('updateweight')
 
         
-#A fully connected layer        
+#A fully connected layer    
+# need to add the connection to the other neurons    
 class FullyConnected:
     #initialize with the number of neurons in the layer, their activation,the input size, the leraning rate and a 2d matrix of weights (or else initilize randomly)
     def __init__(self,numOfNeurons, activation, input_num, lr, weights=None):
