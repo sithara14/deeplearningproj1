@@ -1,5 +1,6 @@
 import numpy as np
 import sys
+import random
 """
 For this entire file there are a few constants:
 activation:
@@ -14,21 +15,38 @@ loss:
 # A class which represents a single neuron
 class Neuron:
     #initilize neuron with activation type, number of inputs, learning rate, and possibly with set weights
+    #weights if null have to be random from 0-1
     def __init__(self,activation, input_num, lr, weights=None):
         self.activation = activation
         self.input_num = input_num
         self.lr = lr
+        if weights == None:
+            array=[]
+            for i in range(input_num) :
+                x = random.random()
+                array[i] = x 
+            weights = array
+        else self.weights = weights
+
+
         print('constructor')    
         
-    #This method returns the activation of the network
+    #This method returns the activation of the net
     def activate(self,net):
-        linear_activation= x
-        logistic = 1/(1+e^-x)
+        if(self.activation = 0 )
+            return x
+        else if (self.activation = 1 )
+            logistic = 1/(1+e^-x)
+        
 
         print('activate')   
         
     #Calculate the output of the neuron should save the input and output for back-propagation.   
     def calculate(self,input):
+        output=[]
+        returnself.activate
+
+
         print('calculate')
 
     #This method returns the derivative of the activation function with respect to the net   
