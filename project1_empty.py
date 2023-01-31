@@ -1,5 +1,6 @@
 import numpy as np
 import sys
+import random
 """
 For this entire file there are a few constants:
 activation:
@@ -14,19 +15,44 @@ loss:
 # A class which represents a single neuron
 class Neuron:
     #initilize neuron with activation type, number of inputs, learning rate, and possibly with set weights
+    #weights if null have to be random from 0-1
     def __init__(self,activation, input_num, lr, weights=None):
+        self.activation = activation
+        self.input_num = input_num
+        self.lr = lr
+        if weights == None:
+            array=[]
+            for i in range(input_num) :
+                x = random.random()
+                array[i] = x 
+            weights = array
+        else self.weights = weights
+
+
         print('constructor')    
         
     #This method returns the activation of the net
     def activate(self,net):
+        if(self.activation = 0 )
+            return x
+        else if (self.activation = 1 )
+            logistic = 1/(1+e^-x)
+        
+
         print('activate')   
         
     #Calculate the output of the neuron should save the input and output for back-propagation.   
     def calculate(self,input):
+        output=[]
+        returnself.activate
+
+
         print('calculate')
 
     #This method returns the derivative of the activation function with respect to the net   
     def activationderivative(self):
+        if self.activation= "linear" then return 1
+        if self.activate = "logistic" then return f(x)(1-f(x))
         print('activationderivative')   
     
     #This method calculates the partial derivative for each weight and returns the delta*w to be used in the previous layer
@@ -42,11 +68,21 @@ class Neuron:
 class FullyConnected:
     #initialize with the number of neurons in the layer, their activation,the input size, the leraning rate and a 2d matrix of weights (or else initilize randomly)
     def __init__(self,numOfNeurons, activation, input_num, lr, weights=None):
+        self.numOfNeurons = numOfNeurons
+        self.activation = activation
+        self.input_num =input_num
+        self.lr = lr
+        self.weights = weights
         print('constructor') 
         
         
     #calcualte the output of all the neurons in the layer and return a vector with those values (go through the neurons and call the calcualte() method)      
+    #input should be coming in as a vector 
     def calculate(self, input):
+       #create array and add the results of calculate to the array
+        for i in input:
+            Neuron.calculate(i)
+
         print('calculate') 
         
             
