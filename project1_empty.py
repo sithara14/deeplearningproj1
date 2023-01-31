@@ -1,6 +1,5 @@
 import numpy as np
-import sys
-import random
+import sys,random, math
 """
 For this entire file there are a few constants:
 activation:
@@ -26,25 +25,30 @@ class Neuron:
                 x = random.random()
                 array[i] = x 
             weights = array
-        else self.weights = weights
+        else: 
+            self.weights = weights
 
 
         print('constructor')    
         
     #This method returns the activation of the net
     def activate(self,net):
-        if(self.activation = 0 )
+        x=net
+        if self.activation == 0 :
             return x
-        else if (self.activation = 1 )
-            logistic = 1/(1+e^-x)
-        
+        elif self.activation == 1 :
+            return 1/(1+math.exp(-x))
 
+    
         print('activate')   
         
     #Calculate the output of the neuron should save the input and output for back-propagation.   
     def calculate(self,input):
         output=[]
-        returnself.activate
+        sum=0
+        for x in input:
+            
+        return self.activate
 
 
         print('calculate')
