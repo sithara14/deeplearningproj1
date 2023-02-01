@@ -25,6 +25,7 @@ class Neuron:
         self.bias_weight = 1    
         self.input_history=[]
         self.output=0
+        self.partial_deriv=0
         
 
 
@@ -46,18 +47,18 @@ class Neuron:
     #if input is a multi demsionalarray then we can loop through the array and get the summation
     def calculate(self,input):
         #if weights are none fill with random numbers
-        if weights == None:
+        if self.weights == None:
             array=[]
-            for i in range(input_num) :
+            for i in range(self.input_num) :
                 x = random.random()
                 array[i] = x 
             self.weights = array
          
-            
-        
         self.input_history = input
         weighted_input= np.dot(input, self.weights) + self.bias_weight
         self.output= self.activate(self,weighted_input)
+        #store the output ^
+
         return self.output
 
 
@@ -90,6 +91,10 @@ class FullyConnected:
         self.input_num =input_num
         self.lr = lr
         self.weights = weights
+
+        for i in range(self.numOfNeurons):
+            neuron[i] = Neuron(self.activation,self.input_num,self.lr,self.weights)
+            
         print('constructor') 
         
         
