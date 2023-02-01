@@ -68,7 +68,7 @@ class Neuron:
         if self.activation == 0:
             return 1
         elif self.activate == 1: 
-            return (self.activate(self,self.sum) * (1 - self.activate(self,self.sum)))
+            return (self.activate(self,self.weighted_input) * (1 - self.activate(self,self.weighted_input)))
         print('activationderivative')   
     
     #This method calculates the partial derivative for each weight and returns the delta*w to be used in the previous layer
