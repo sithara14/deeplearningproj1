@@ -27,8 +27,6 @@ class Neuron:
         self.output=0
         self.partial_deriv=0
         
-
-
         print('constructor')    
         
     #This method returns the activation of the net
@@ -78,6 +76,7 @@ class Neuron:
     
     #Simply update the weights using the partial derivatives and the leranring weight
     def updateweight(self):
+        self.weights= self.weights - self.lr ()
         print('updateweight')
 
         
@@ -92,9 +91,10 @@ class FullyConnected:
         self.lr = lr
         self.weights = weights
 
+    #we might need to find out how to 
         for i in range(self.numOfNeurons):
-            neuron[i] = Neuron(self.activation,self.input_num,self.lr,self.weights)
-            
+            exec(f"neuron_{i} = Neuron.__init__(self.activation,self.input_num,self.lr,self.weights")
+
         print('constructor') 
         
         
@@ -102,8 +102,9 @@ class FullyConnected:
     #input should be coming in as a vector 
     def calculate(self, input):
        #create array and add the results of calculate to the array
-        for i in input:
-            Neuron.calculate(i)
+       output=0
+       for i in input:
+            Neuron.calculate(input)
 
         print('calculate') 
         
@@ -117,7 +118,9 @@ class FullyConnected:
 class NeuralNetwork:
     #initialize with the number of layers, number of neurons in each layer (vector), input size, activation (for each layer), the loss function, the learning rate and a 3d matrix of weights weights (or else initialize randomly)
     def __init__(self,numOfLayers,numOfNeurons, inputSize, activation, loss, lr, weights=None):
-        print('constructor') 
+        for i in range(numOfLayers):
+            exec(f"FullyConnected.__init__(numOfNeurons,activation,inputSize,lr,weights")
+        print('constructor complete') 
     
     #Given an input, calculate the output (using the layers calculate() method)
     def calculate(self,input):
@@ -125,6 +128,13 @@ class NeuralNetwork:
         
     #Given a predicted output and ground truth output simply return the loss (depending on the loss function)
     def calculateloss(self,yp,y):
+        sum=0
+        length=len(yp)
+        for i in length:
+            sum = (yp[i]-y[i])
+
+        sum = (sum**2)/length
+        return sum
         print('calculate')
     
     #Given a predicted output and ground truth output simply return the derivative of the loss (depending on the loss function)        
