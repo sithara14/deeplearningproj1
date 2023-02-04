@@ -21,8 +21,7 @@ class Neuron:
         self.input_num = input_num
         self.lr = lr
         self.weights = weights
-        #setting up the output and input history
-        self.bias_weight = 1    
+        #setting up the output and input history   
         self.input_history=[]
         self.output=0
         self.partial_deriv=0
@@ -31,13 +30,12 @@ class Neuron:
         
     #This method returns the activation of the net
     def activate(self,net):
-        x=net
+        x = net
         if self.activation == 0 :
             return x
         elif self.activation == 1 :
             return 1/(1+math.exp(-x))
 
-    
         print('activate')   
         
     #Calculate the output of the neuron should save the input and output for back-propagation. 
@@ -46,21 +44,16 @@ class Neuron:
     def calculate(self,input):
         #if weights are none fill with random numbers
         if self.weights == None:
-            array=[]
-            for i in range(self.input_num) :
-                x = random.random()
-                array[i] = x 
-            self.weights = array
-         
-        self.input_history = input
-        weighted_input= np.dot(input, self.weights) + self.bias_weight
+            self.weights = np.random.rand(1, self.input_num + 1) # +1 is for bias 
+        i = input
+        i.append(1)
+        self.input_history += i 
+        weighted_input= i * self.weights 
         self.output= self.activate(self,weighted_input)
         #store the output ^
 
         return self.output
-
-
-    print('calculate')
+        print('calculate')
 
     #This method returns the derivative of the activation function with respect to the net   
     def activationderivative(self):
@@ -105,8 +98,9 @@ class FullyConnected:
        output=0
        for i in input:
             Neuron.calculate(input)
+       print('calculate') 
+    
 
-        print('calculate') 
         
             
     #given the next layer's w*delta, should run through the neurons calling calcpartialderivative() for each (with the correct value), sum up its ownw*delta, and then update the wieghts (using the updateweight() method). I should return the sum of w*delta.          
