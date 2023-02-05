@@ -21,7 +21,8 @@ class Neuron:
         self.input_num = input_num
         self.lr = lr
         self.weights = weights
-        #setting up the output and input history   
+        #setting up the output and input history
+        self.wdeltavector=[]
         self.input_history=[]
         self.output=0
         self.partial_deriv=0
@@ -70,13 +71,17 @@ class Neuron:
     #This method calculates the partial derivative for each weight and returns the delta*w to be used in the previous layer
     def calcpartialderivative(self, wtimesdelta):
         weights = self.weights[0:self.input_num]
-        wdeltavector = [item * wtimesdelta * self.activationderivative(self) for item in weights]
-        return wdeltavector
+        self.wdeltavector = [item * wtimesdelta * self.activationderivative(self) for item in weights]
+        return self.wdeltavector
         print('calcpartialderivative') 
     
     #Simply update the weights using the partial derivatives and the learning weight
     def updateweight(self):
-        self.weights= self.weights - self.lr ()
+        lastinput = self.input_history[len(self.input_history) - 1, 0:self.input_num]
+        gradient = np.multiply(self.wdeltavector, lastinput)
+
+        for x in range(self.weights - 1):
+            self.weights[x] = self.weights[x] - self.lr * gradient[x]
         print('updateweight')
 
         
