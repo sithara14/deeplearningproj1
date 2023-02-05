@@ -49,11 +49,11 @@ class Neuron:
         i.append(1)
         self.input_history += [i]
 
-        weighted_input = 0
+        net = 0
         for x in range(self.input_num + 1):
-            weighted_input += (i[x] * self.weights[x])
+            net += (i[x] * self.weights[x])
 
-        self.output = self.activate(self,weighted_input)
+        self.output = self.activate(self,net)
         #store the output ^
 
         return self.output
@@ -64,14 +64,14 @@ class Neuron:
         if self.activation == 0:
             return 1
         elif self.activate == 1: 
-            return (self.activate(self,self.weighted_input) * (1 - self.activate(self,self.weighted_input)))
+            return (self.output * (1 - self.output))
         print('activationderivative')   
     
     #This method calculates the partial derivative for each weight and returns the delta*w to be used in the previous layer
     def calcpartialderivative(self, wtimesdelta):
         print('calcpartialderivative') 
     
-    #Simply update the weights using the partial derivatives and the leranring weight
+    #Simply update the weights using the partial derivatives and the learning weight
     def updateweight(self):
         self.weights= self.weights - self.lr ()
         print('updateweight')
@@ -132,11 +132,9 @@ class NeuralNetwork:
     #Given a predicted output and ground truth output simply return the loss (depending on the loss function)
     def calculateloss(self,yp,y):
         sum=0
-        length=len(yp)
+        length = len(yp)
         for i in length:
-            sum = (yp[i]-y[i])
-
-        sum = (sum**2)/length
+            sum += ((yp[i]-y[i]) ** 2) / 2
         return sum
         print('calculate')
     
