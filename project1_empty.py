@@ -47,10 +47,13 @@ class Neuron:
             self.weights = np.random.rand(1, self.input_num + 1) # +1 is for bias 
         i = input
         i.append(1)
-        self.input_history += i
+        self.input_history += [i]
 
-        weighted_input= i * self.weights 
-        self.output= self.activate(self,weighted_input)
+        weighted_input = 0
+        for x in range(self.input_num + 1):
+            weighted_input += (i[x] * self.weights[x])
+
+        self.output = self.activate(self,weighted_input)
         #store the output ^
 
         return self.output
