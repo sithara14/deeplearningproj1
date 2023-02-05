@@ -47,7 +47,8 @@ class Neuron:
             self.weights = np.random.rand(1, self.input_num + 1) # +1 is for bias 
         i = input
         i.append(1)
-        self.input_history += i 
+        self.input_history += i
+
         weighted_input= i * self.weights 
         self.output= self.activate(self,weighted_input)
         #store the output ^
@@ -83,10 +84,15 @@ class FullyConnected:
         self.input_num =input_num
         self.lr = lr
         self.weights = weights
+        self.layer = []
 
-    #we might need to find out how to 
+        # initializing layer of neuron
         for i in range(self.numOfNeurons):
-            exec(f"neuron_{i} = Neuron.__init__(self.activation,self.input_num,self.lr,self.weights")
+            if self.weights is not None:
+                self.layer.append(Neuron(self.activation, self.input_num, self.lr, self.weights[i]))
+            else:
+                self.layer.append(Neuron(self.activation, self.input_num, self.lr))
+
 
         print('constructor') 
         
