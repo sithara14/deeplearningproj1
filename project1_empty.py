@@ -69,6 +69,9 @@ class Neuron:
     
     #This method calculates the partial derivative for each weight and returns the delta*w to be used in the previous layer
     def calcpartialderivative(self, wtimesdelta):
+        weights = self.weights[0:self.input_num]
+        wdeltavector = [item * wtimesdelta * self.activationderivative(self) for item in weights]
+        return wdeltavector
         print('calcpartialderivative') 
     
     #Simply update the weights using the partial derivatives and the learning weight
