@@ -137,7 +137,8 @@ class NeuralNetwork:
         self.activation = activation
         self.loss = loss
         self.network = []
-        self.y =[]
+        self.output =[]
+        self.eTotal=0
         for i in range(numOfLayers):    
             network.append(FullyConnected(numOfNeurons[i], activation, inputSize, lr, weights[i]))
 
@@ -146,8 +147,12 @@ class NeuralNetwork:
     
     #Given an input, calculate the output (using the layers calculate() method)
     def calculate(self,input):
-        for i in range(self.numOfLayers):
-            self.y = network[i].calculate(input)
+
+        for i in range(self.numOfLayers-1):
+            if i == self.numOfLayers-2 or i == self.numOfLayers-1:
+                self.output.append(network.calculate(input))
+            else:
+                network[i].calculate(input)
         print('constructor')
         
     #Given a predicted output and ground truth output simply return the loss (depending on the loss function)
@@ -164,6 +169,12 @@ class NeuralNetwork:
     #Given a single input and desired output preform one step of backpropagation (including a forward pass, getting the derivative of the loss, and then calling calcwdeltas for layers with the right values         
     def train(self,x,y):
         output = self.calculate(x)
+
+        #finding the E total of the network
+        for i in range(output):
+            self.eTotal += self.lossderiv(y,self.output)
+        ######################
+        # stopping here my brain hurts
         print('train')
 
 if __name__=="__main__":
