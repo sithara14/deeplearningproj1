@@ -28,7 +28,7 @@ class Neuron:
         self.partial_deriv=0
         self.net = 0                                           #we are treating the net as the input to the activation function 
         
-        print('constructor')    
+        print('Nueron constructor')    
         
     #This method returns the activation of the net
     def activate(self,net):
@@ -106,16 +106,17 @@ class FullyConnected:
                 self.layer.append(Neuron(self.activation, self.input_num, self.lr))
 
 
-        print('constructor') 
+        print('Fully connected constructor') 
         
         
     #calcualte the output of all the neurons in the layer and return a vector with those values (go through the neurons and call the calcualte() method)      
     #input should be coming in as a vector 
     def calculate(self, input):
        #create array and add the results of calculate to the array
+       print("in Fully connect calculate")
        output=0
-       for i in input:
-            self.layer.calculate(input)
+       for i in range(self.numOfNeurons):
+        self.layer[i].calculate(input)
        print('calculate') 
     
 
@@ -147,13 +148,14 @@ class NeuralNetwork:
     
     #Given an input, calculate the output (using the layers calculate() method)
     def calculate(self,input):
-
+        
         for i in range(self.numOfLayers):                             #I did the this so we can save the output of the calculate the total loss for the Etotal and backprop
-            if i == self.numOfLayers-2 or i == self.numOfLayers-1:
-                self.output.append(network.calculate(input))
-            else:
-                network[i].calculate(input)
-        print('constructor')
+#            if i == length(self.numOfLayers-1):
+#                print("Appending the results of the output nuerons to the slef.output variable")
+#                self.output.append(network.calculate(input))
+#            else:
+                self.network[i].calculate(input)
+        print('NN calculate, creating the fully connected layer')
         
     #Given a predicted output and ground truth output simply return the loss (depending on the loss function)
     def calculateloss(self,yp,y):
@@ -168,8 +170,9 @@ class NeuralNetwork:
     
     #Given a single input and desired output preform one step of backpropagation (including a forward pass, getting the derivative of the loss, and then calling calcwdeltas for layers with the right values         
     def train(self,x,y):
+        print("starting the NN Calculate")
         output = self.calculate(x)
-
+        print("Feed forward has completed")
         #finding the E total of the network
         for i in range(output):
             self.eTotal += self.lossderiv(y,self.output)
