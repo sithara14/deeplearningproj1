@@ -45,7 +45,7 @@ class Neuron:
     #if input is a multi demsionalarray then we can loop through the array and get the summation
     def calculate(self,input):
         #if weights are none fill with random numbers
-        if self.weights == None:
+        if self.weights is None:
             self.weights = np.random.rand(1, self.input_num + 1) # +1  for the bias set to one in requierments of the project
         i = input                                                # store input in the instance of the nueron
         i.append(1)
