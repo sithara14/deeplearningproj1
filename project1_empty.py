@@ -24,7 +24,6 @@ class Neuron:
             self.weights = weights
         else:
             self.weights = []
-        self.weights = weights
         #setting up the output and input history
         self.wdeltavector=[]
         self.input = []
@@ -50,8 +49,8 @@ class Neuron:
     def calculate(self,input):
         #if weights are none fill with random numbers
         if self.weights is None:
-            self.weights= []
             for i in range(self.input_num-1):
+                self.weights = []
                 rand_wght = np.random.rand(1, self.input_num + 1)
                 self.weights.insert(i,rand_wght) # +1  for the bias set to one in requierments of the project
         i = input                                                # store input in the instance of the nueron
@@ -155,7 +154,7 @@ class NeuralNetwork:
         self.output =[]
         self.eTotal=0
         for i in range(numOfLayers):    
-            self.network.insert(i,FullyConnected(numOfNeurons, activation[i], inputSize, lr, weights[i]))
+            self.network.insert(i,FullyConnected(numOfNeurons[i], activation[i], inputSize, lr, weights[i]))
 
 
         print('constructor complete') 
@@ -203,7 +202,7 @@ if __name__=="__main__":
         #setting up the neural network
         #network=NeuralNetwork(2,[2,2],2,[1,1],0,.5,w)
         #network.train(x,yp)
-        #test = Neuron(1,2,.5,None)
+        #test = Neuron(1,2,.5,[.15,.2])
         #test.calculate(.20)
         #test = FullyConnected(2,1,2,.5,[[.15,.2,.35],[.25,.3,.35]])
         #test.calculate([0.05,0.1])
