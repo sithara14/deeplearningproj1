@@ -20,6 +20,10 @@ class Neuron:
         self.activation = activation
         self.input_num = input_num
         self.lr = lr
+        if weights is not None:
+            self.weights = weights
+        else:
+            self.weights = []
         self.weights = weights
         #setting up the output and input history
         self.wdeltavector=[]
@@ -46,17 +50,25 @@ class Neuron:
     def calculate(self,input):
         #if weights are none fill with random numbers
         if self.weights is None:
-            self.weights = np.random.rand(1, self.input_num + 1) # +1  for the bias set to one in requierments of the project
+            self.weights= []
+            for i in range(self.input_num-1):
+                rand_wght = np.random.rand(1, self.input_num + 1)
+                self.weights.insert(i,rand_wght) # +1  for the bias set to one in requierments of the project
         i = input                                                # store input in the instance of the nueron
-        i.append(1)
-        self.input = i
+        #i.append(1)
+        #self.input = i
+        print(input)
+        print(self.weights)
 
-        net = 0                                                 # creating a variable to store the input of the nueron that is later called to the activation function
-        for x in range(self.input_num + 1):
-            net += (i[x] * self.weights[x])                     # doing the simga i=0 to n wi*
+
+
+        net = 0                                 # creating a variable to store the input of the nueron that is later called to the activation function
+        for x in range(len(self.weights)):
+            print(x)
+            net += (i * self.weights[x])                     # doing the simga i=0 to n wi*
         self.net = net
-        self.output = self.activate(self,net)
-        
+        self.output = self.activate(net)
+        print(self.output)
 
         return self.output  #not sure if we need to return anything here
         print('calculate')
@@ -97,6 +109,7 @@ class FullyConnected:
         self.lr = lr
         self.weights = weights
         self.layer = []
+        self.output =[] 
 
         # initializing layer of neuron
         for i in range(self.numOfNeurons):
@@ -113,11 +126,12 @@ class FullyConnected:
     #input should be coming in as a vector 
     def calculate(self, input):
        #create array and add the results of calculate to the array
-       print("in Fully connect calculate")
-       output=0
-       for i in range(self.numOfNeurons):
-        self.layer[i].calculate(input)
-       print('calculate') 
+        print("in Fully connect calculate")
+        
+        for i in range(self.numOfNeurons):
+            self.output.insert(i,(self.layer[i].calculate(input[i])))
+        print(self.output)
+        print('calculatein Fully connected') 
     
 
         
@@ -141,7 +155,7 @@ class NeuralNetwork:
         self.output =[]
         self.eTotal=0
         for i in range(numOfLayers):    
-            self.network.append(FullyConnected(numOfNeurons[i], activation[i], inputSize, lr, weights[i]))
+            self.network.insert(i,FullyConnected(numOfNeurons, activation[i], inputSize, lr, weights[i]))
 
 
         print('constructor complete') 
@@ -150,11 +164,7 @@ class NeuralNetwork:
     def calculate(self,input):
         
         for i in range(self.numOfLayers):                             #I did the this so we can save the output of the calculate the total loss for the Etotal and backprop
-#            if i == length(self.numOfLayers-1):
-#                print("Appending the results of the output nuerons to the slef.output variable")
-#                self.output.append(network.calculate(input))
-#            else:
-                self.network[i].calculate(input)
+                print(self.network[i].calculate(input))
         print('NN calculate, creating the fully connected layer')
         
     #Given a predicted output and ground truth output simply return the loss (depending on the loss function)
@@ -191,13 +201,18 @@ if __name__=="__main__":
         yp=np.array([0.01,0.99])
 
         #setting up the neural network
-        network=NeuralNetwork(2,[2,2],2,[1,1],0,.5,w)
-        network.train(x,yp)
-
-
+        #network=NeuralNetwork(2,[2,2],2,[1,1],0,.5,w)
+        #network.train(x,yp)
+        #test = Neuron(1,2,.5,None)
+        #test.calculate(.20)
+        #test = FullyConnected(2,1,2,.5,[[.15,.2,.35],[.25,.3,.35]])
+        #test.calculate([0.05,0.1])
+        test = NeuralNetwork(2,[2,2],[2,2],[1,1],0,.5,[[[.15,.2,.35],[.25,.3,.35]],[[.4,.45,.6],[.5,.55,.6]]])
+        test.calculate(x)
 
 
     elif(sys.argv[1]=='and'):
+        
         print('learn and')
         
     elif(sys.argv[1]=='xor'):
