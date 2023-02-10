@@ -53,23 +53,22 @@ class Neuron:
                 self.weights = []
                 rand_wght = np.random.rand(1, self.input_num + 1)
                 self.weights.insert(i,rand_wght) # +1  for the bias set to one in requierments of the project
-        i = input                                                # store input in the instance of the nueron
-        #i.append(1)
-        #self.input = i
-        print(input)
-        print(self.weights)
 
+        print("the input is ",input)
+        print("the first weight is ",self.weights[0])
+        print("the second weight is ",self.weights[1])
+        print("the bias is ", self.weights[len(self.weights)-1])
 
 
         net = 0                                 # creating a variable to store the input of the nueron that is later called to the activation function
-        for x in range(len(self.weights)):
-            print(x)
-            net += (i * self.weights[x])                     # doing the simga i=0 to n wi*
-        self.net = net
-        self.output = self.activate(net)
+        for x in range(len(self.weights)-1):
+            net += (input[x] * self.weights[x])                     # doing the simga i=0 to n wi*
+        self.net = net + self.weights[len(self.weights)-1]#plus 1 for the bias
+        print("the net of the nueron is ",self.net)
+        self.output = self.activate(self.net)
         print(self.output)
 
-        return self.output  #not sure if we need to return anything here
+        return self.output  
         print('calculate')
 
     #This method returns the derivative of the activation function with respect to the net   
@@ -128,8 +127,9 @@ class FullyConnected:
         print("in Fully connect calculate")
         
         for i in range(self.numOfNeurons):
-            self.output.insert(i,(self.layer[i].calculate(input[i])))
-        print(self.output)
+            self.output.insert(i,(self.layer[i].calculate(input)))  #[i][]
+        print ("output from calc in FC Layer",self.output)
+        return (self.output)
         print('calculatein Fully connected') 
     
 
@@ -162,17 +162,33 @@ class NeuralNetwork:
     #Given an input, calculate the output (using the layers calculate() method)
     def calculate(self,input):
         
-        for i in range(self.numOfLayers):                             #I did the this so we can save the output of the calculate the total loss for the Etotal and backprop
-                print(self.network[i].calculate(input))
+        for i in range(self.numOfLayers):
+            ninput = self.network[i].calculate(input)                             #I did the this so we can save the output of the calculate the total loss for the Etotal and backprop
+            self.output.insert(i,ninput)
+            input = ninput
+        print("This is the out put from the NN Class",self.output)
         print('NN calculate, creating the fully connected layer')
         
     #Given a predicted output and ground truth output simply return the loss (depending on the loss function)
     def calculateloss(self,yp,y):
-        return (yp-p)
+        if self.loss == 0: #sum of squares
+            self.eTotal = (0.5)*(np.sum((np.subtract(yp - y))^2))
+        if self.loss == 1: #binary cross entropy
+            sum=0
+            for i in range(len(y)):
+                sum += y[i] * np.log(yp[i]) + (1-y[i])*np.log(1-yp[i])
+            self.eTotal = -(sum)/len(y)
+        return self.eTotal
+        
         print('calculate')
     
     #Given a predicted output and ground truth output simply return the derivative of the loss (depending on the loss function)        
     def lossderiv(self,yp,y):
+        if self.loss == 0: #sum of squares
+            self.eTotal = (0.5)*(np.sum((np.subtract(yp - y))^2))
+        if self.loss == 1: #binary cross entropy
+            self.eTotal = 
+        return self.eTotal
         return self.calculateloss(yp,y) * FullyConnected.Neuron.activationderivative(y)
 
         print('lossderiv')
@@ -203,11 +219,11 @@ if __name__=="__main__":
         #network=NeuralNetwork(2,[2,2],2,[1,1],0,.5,w)
         #network.train(x,yp)
         #test = Neuron(1,2,.5,[.15,.2])
-        #test.calculate(.20)
+        #test.calculate([.2,.05])
         #test = FullyConnected(2,1,2,.5,[[.15,.2,.35],[.25,.3,.35]])
         #test.calculate([0.05,0.1])
-        test = NeuralNetwork(2,[2,2],[2,2],[1,1],0,.5,[[[.15,.2,.35],[.25,.3,.35]],[[.4,.45,.6],[.5,.55,.6]]])
-        test.calculate(x)
+        #test = NeuralNetwork(2,[2,2],[2,2],[1,1],0,.5,w)
+        #test.calculate(x)
 
 
     elif(sys.argv[1]=='and'):
