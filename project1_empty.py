@@ -187,7 +187,7 @@ class NeuralNetwork:
         if self.loss == 0: #sum of squares
             self.eTotal = (0.5)*(np.sum((np.subtract(yp - y))^2))
         if self.loss == 1: #binary cross entropy
-            self.eTotal = 
+            self.eTotal = y[i] - (1-y[i])*np.log(1-yp[i])
         return self.eTotal
         return self.calculateloss(yp,y) * FullyConnected.Neuron.activationderivative(y)
 
