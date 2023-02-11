@@ -81,9 +81,13 @@ class Neuron:
     
     #This method calculates the partial derivative for each weight and returns the delta*w to be used in the previous layer
     def calcpartialderivative(self, wtimesdelta):
-        weights = self.weights[0:self.input_num]
+        weights = self.weights[0:len(weights)-1]
+        
+        
+        
+        
         self.wdeltavector = [item * wtimesdelta * self.activationderivative(self) for item in weights]
-        return self.wdeltavector
+        #return self.wdeltavector
         print('calcpartialderivative') 
     
     #Simply update the weights using the partial derivatives and the learning weight
@@ -108,6 +112,7 @@ class FullyConnected:
         self.weights = weights
         self.layer = []
         self.output =[] 
+        self.sumwdelta = []
 
         # initializing layer of neuron
         for i in range(self.numOfNeurons):
@@ -132,11 +137,11 @@ class FullyConnected:
         return (self.output)
         print('calculatein Fully connected') 
     
-
-        
-            
     #given the next layer's w*delta, should run through the neurons calling calcpartialderivative() for each (with the correct value), sum up its ownw*delta, and then update the wieghts (using the updateweight() method). I should return the sum of w*delta.          
     def calcwdeltas(self, wtimesdelta):
+        for i in range(len(wtimesdelta)):
+            self.sumwdelta.insert(i,(self.layer[i].activationderivative(self.layer[i].output)*wtimesdelta))
+        print("wtimesdelta")
         print('calcwdeltas') 
            
         
@@ -153,6 +158,7 @@ class NeuralNetwork:
         self.network = []
         self.output =[]
         self.eTotal=0
+        self.etotaldirv
         for i in range(numOfLayers):    
             self.network.insert(i,FullyConnected(numOfNeurons[i], activation[i], inputSize, lr, weights[i]))
 
@@ -172,25 +178,26 @@ class NeuralNetwork:
     #Given a predicted output and ground truth output simply return the loss (depending on the loss function)
     def calculateloss(self,yp,y):
         if self.loss == 0: #sum of squares
-            self.eTotal = (0.5)*(np.sum((np.subtract(yp - y))^2))
+            for i in range(len(yp)):
+                self.eTotal +=(.5)*(yp[i]-y[i])**2
+            #self.eTotal = (0.5)*(np.sum((np.subtract(yp - y))^2))
         if self.loss == 1: #binary cross entropy
             sum=0
-            for i in range(len(y)):
+            for i in range(len(y)-1):
                 sum += y[i] * np.log(yp[i]) + (1-y[i])*np.log(1-yp[i])
             self.eTotal = -(sum)/len(y)
-        return self.eTotal
+        print("this is the etotal",self.eTotal) 
         
         print('calculate')
     
     #Given a predicted output and ground truth output simply return the derivative of the loss (depending on the loss function)        
     def lossderiv(self,yp,y):
         if self.loss == 0: #sum of squares
-            self.eTotal = (0.5)*(np.sum((np.subtract(yp - y))^2))
+                self.etotaldirv= (-1)*(yp-y)
         if self.loss == 1: #binary cross entropy
-            self.eTotal = y[i] - (1-y[i])*np.log(1-yp[i])
-        return self.eTotal
-        return self.calculateloss(yp,y) * FullyConnected.Neuron.activationderivative(y)
+            self.etotaldirv = -(yp/yp)+((1-y)/(1-yp))      # I think this is correct not entirely sure
 
+        return self.etotaldirv
         print('lossderiv')
     
     #Given a single input and desired output preform one step of backpropagation (including a forward pass, getting the derivative of the loss, and then calling calcwdeltas for layers with the right values         
@@ -200,7 +207,8 @@ class NeuralNetwork:
         print("Feed forward has completed")
         #finding the E total of the network
         for i in range(output):
-            self.eTotal += self.lossderiv(y,self.output)
+            self.etotaldirv.insert(self.lossderiv(y[i],self.output[i])) 
+            self.network[i].calcwdeltas(self.etotaldirv)
         ######################
         # stopping here my brain hurts
         print('train')
@@ -214,7 +222,7 @@ if __name__=="__main__":
         w=np.array([[[.15,.2,.35],[.25,.3,.35]],[[.4,.45,.6],[.5,.55,.6]]])
         x=np.array([0.05,0.1])
         yp=np.array([0.01,0.99])
-
+        y = np.array([0.7513650695523157, 0.7729284653214625])
         #setting up the neural network
         #network=NeuralNetwork(2,[2,2],2,[1,1],0,.5,w)
         #network.train(x,yp)
@@ -222,8 +230,9 @@ if __name__=="__main__":
         #test.calculate([.2,.05])
         #test = FullyConnected(2,1,2,.5,[[.15,.2,.35],[.25,.3,.35]])
         #test.calculate([0.05,0.1])
-        #test = NeuralNetwork(2,[2,2],[2,2],[1,1],0,.5,w)
+        test = NeuralNetwork(2,[2,2],[2,2],[1,1],0,.5,w)
         #test.calculate(x)
+        test.calculateloss(yp,y)
 
 
     elif(sys.argv[1]=='and'):
