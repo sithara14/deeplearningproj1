@@ -27,7 +27,7 @@ class Neuron:
         #setting up the output and input history
         self.wdeltavector=[]
         self.input = None
-        self.output=0
+        self.output = 0
         self.partial_deriv=None
         self.net = 0  #we are treating the net as the input to the activation function
         self.wdeltavector = None
@@ -91,7 +91,7 @@ class Neuron:
         print("weights",weights)
         print("wtimesdelta:",wtimesdelta)
         print("this is self.wdeltavector ",self.wdeltavector)
-        #return self.wdeltavector
+        return self.wdeltavector
         print('calcpartialderivative') 
     
     #Simply update the weights using the partial derivatives and the learning weight
@@ -117,7 +117,7 @@ class FullyConnected:
         self.layer = []
         self.output =[]
         #self.derivact = []
-        self.sumwdelta = None
+        self.sumwdelta =[]
 
         # initializing layer of neuron
         for i in range(self.numOfNeurons):
@@ -152,12 +152,14 @@ class FullyConnected:
         print("layer 0 output:", self.layer[0].output)
         print("layer 1 output:", self.layer[1].output)
 
-
+        presumwdelta = []
         for i in range(len(wtimesdelta)):
-            input = self.layer[i].output
+            #input = self.layer[i].output
             ownwtimesdelta =(self.layer[i].calcpartialderivative(wtimesdelta[i]))
             print("this is owntimedelta ",ownwtimesdelta)     #*wtimesdelta))
-            self.sumwdelta.insert(i,ownwtimesdelta)
+            presumwdelta.insert(i,ownwtimesdelta)
+
+        self.sumwdelta = np.sum(presumwdelta, axis=0)
         print("This is the array from calcwdeltas",self.sumwdelta)
         print('calcwdeltas') 
            
