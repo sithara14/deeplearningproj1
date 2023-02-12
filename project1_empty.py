@@ -23,22 +23,24 @@ class Neuron:
         if weights is not None:
             self.weights = weights
         else:
-            self.weights = []
+            self.weights = np.random.rand(input_num+1)
         #setting up the output and input history
         self.wdeltavector=[]
-        self.input = []
+        self.input = None
         self.output=0
-        self.partial_deriv=0
-        self.net = 0                                           #we are treating the net as the input to the activation function 
+        self.partial_deriv=None
+        self.net = 0  #we are treating the net as the input to the activation function
+        self.wdeltavector = None
+
         
         print('Nueron constructor')    
         
     #This method returns the activation of the net
     def activate(self,net):
         x = net
-        if self.activation == 0 :
+        if self.activation == 0 : #linear
             return x
-        elif self.activation == 1 :
+        elif self.activation == 1 : #logistic
             return 1/(1+math.exp(-x))
 
         print('activate')   
@@ -48,11 +50,11 @@ class Neuron:
     #if input is a multi demsionalarray then we can loop through the array and get the summation
     def calculate(self,input):
         #if weights are none fill with random numbers
-        if self.weights is None:
-            for i in range(self.input_num-1):
-                self.weights = []
-                rand_wght = np.random.rand(1, self.input_num + 1)
-                self.weights.insert(i,rand_wght) # +1  for the bias set to one in requierments of the project
+      #  if self.weights is None:
+      #      for i in range(self.input_num-1):
+      #          self.weights = []
+      #          rand_wght = np.random.rand(1, self.input_num + 1)
+      #          self.weights.insert(i,rand_wght) # +1  for the bias set to one in requierments of the project
 
         #print("the input is ",input)
         #print("the first weight is ",self.weights[0])
@@ -73,9 +75,9 @@ class Neuron:
 
     #This method returns the derivative of the activation function with respect to the net   
     def activationderivative(self):
-        if self.activation == 0:
+        if self.activation == 0: #linear
             return 1
-        elif self.activation == 1: 
+        elif self.activation == 1: #logistic
             print("this is neruone output ",self.output)
             print("output of activationderv",self.output * (1 - self.output))
             return (self.output * (1 - self.output))
@@ -84,12 +86,10 @@ class Neuron:
     #This method calculates the partial derivative for each weight and returns the delta*w to be used in the previous layer
     def calcpartialderivative(self, wtimesdelta):
         weights = self.weights[0:len(self.weights)-1]
-        
-        
+        self.wdeltavector = np.array(weights) * self.activationderivative()
+        self.wdeltavector *= wtimesdelta
         print("weights",weights)
         print("wtimesdelta:",wtimesdelta)
-        for i in range(len(weights)):
-            self.wdeltavector.insert(i,( np.multiply(weights[i], np.multiply(wtimesdelta, self.activationderivative()) )))
         print("this is self.wdeltavector ",self.wdeltavector)
         #return self.wdeltavector
         print('calcpartialderivative') 
@@ -117,7 +117,7 @@ class FullyConnected:
         self.layer = []
         self.output =[]
         #self.derivact = []
-        self.sumwdelta = []
+        self.sumwdelta = None
 
         # initializing layer of neuron
         for i in range(self.numOfNeurons):
@@ -155,7 +155,7 @@ class FullyConnected:
 
         for i in range(len(wtimesdelta)):
             input = self.layer[i].output
-            ownwtimesdelta =(self.layer[i].calcpartialderivative(wtimesdelta))   
+            ownwtimesdelta =(self.layer[i].calcpartialderivative(wtimesdelta[i]))
             print("this is owntimedelta ",ownwtimesdelta)     #*wtimesdelta))
             self.sumwdelta.insert(i,ownwtimesdelta)
         print("This is the array from calcwdeltas",self.sumwdelta)
@@ -245,31 +245,31 @@ class NeuralNetwork:
         print('train')
 
 if __name__=="__main__":
-    if (len(sys.argv)<2):
-        print('a good place to test different parts of your code')
+    #if (len(sys.argv)<2):
+       # print('a good place to test different parts of your code')
         
-    elif (sys.argv[1]=='example'):
+    #elif (sys.argv[1]=='example'):
         print('run example from class (single step)')
         w=np.array([[[.15,.2,.35],[.25,.3,.35]],[[.4,.45,.6],[.5,.55,.6]]])
         x=np.array([0.05,0.1])
         yp=np.array([0.01,0.99])
         y = np.array([0.7513650695523157, 0.7729284653214625])
         #setting up the neural network
-        #network=NeuralNetwork(2,[2,2],2,[1,1],0,.5,w)
-        #network.train(x,yp)
-        #test = Neuron(1,2,.5,[.15,.2])
-        #test.calculate([.2,.05])
-        #test = FullyConnected(2,1,2,.5,[[.15,.2,.35],[.25,.3,.35]])
-        #test.calculate([0.05,0.1])
+        network=NeuralNetwork(2,[2,2],2,[1,1],0,.5,w)
+        network.train(x,yp)
+        test = Neuron(1,2,.5,[.15,.2])
+        test.calculate([.2,.05])
+        test = FullyConnected(2,1,2,.5,[[.15,.2,.35],[.25,.3,.35]])
+        test.calculate([0.05,0.1])
         test = NeuralNetwork(2,[2,2],[2,2],[1,1],0,.5,w)
-        #test.calculate(x)
-        #test.calculateloss(yp,y)
+        test.calculate(x)
+        test.calculateloss(yp,y)
         test.train(x,yp)
 
 
-    elif(sys.argv[1]=='and'):
+    #elif(sys.argv[1]=='and'):
         
         print('learn and')
         
-    elif(sys.argv[1]=='xor'):
+    #elif(sys.argv[1]=='xor'):
         print('learn xor')
