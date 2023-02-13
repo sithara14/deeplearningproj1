@@ -49,18 +49,6 @@ class Neuron:
     # is input coming in as an array, if so we need a summation function as sum(xi+wi)+b  
     #if input is a multi demsionalarray then we can loop through the array and get the summation
     def calculate(self,input):
-        #if weights are none fill with random numbers
-      #  if self.weights is None:
-      #      for i in range(self.input_num-1):
-      #          self.weights = []
-      #          rand_wght = np.random.rand(1, self.input_num + 1)
-      #          self.weights.insert(i,rand_wght) # +1  for the bias set to one in requierments of the project
-
-        #print("the input is ",input)
-        #print("the first weight is ",self.weights[0])
-        #print("the second weight is ",self.weights[1])
-        #print("the bias is ", self.weights[len(self.weights)-1])
-
 
         net = 0                                 # creating a variable to store the input of the nueron that is later called to the activation function
         for x in range(len(self.weights)-1):
@@ -149,8 +137,8 @@ class FullyConnected:
 
 
 
-        print("layer 0 output:", self.layer[0].output)
-        print("layer 1 output:", self.layer[1].output)
+        print("neuron 0 output:", self.layer[0].output)
+        print("neuron 1 output:", self.layer[1].output)
 
         presumwdelta = []
         for i in range(len(wtimesdelta)):
@@ -160,7 +148,9 @@ class FullyConnected:
             presumwdelta.insert(i,ownwtimesdelta)
 
         self.sumwdelta = np.sum(presumwdelta, axis=0)
+
         print("This is the array from calcwdeltas",self.sumwdelta)
+        return self.sumwdelta
         print('calcwdeltas') 
            
         
@@ -176,7 +166,6 @@ class NeuralNetwork:
         self.loss = loss
         self.network = []
         self.eTotal=0
-        self.actderiv = []
         self.etotaldirv = []
         self.output =[]
         for i in range(numOfLayers):    
@@ -189,8 +178,7 @@ class NeuralNetwork:
     def calculate(self,input):
         
         for i in range(self.numOfLayers):
-            ninput = self.network[i].calculate(input) 
-            #self.actderiv.insert(i,self.network[i].derivact)                            #I did the this so we can save the output of the calculate the total loss for the Etotal and backprop
+            ninput = self.network[i].calculate(input)
             input = ninput
         self.output =ninput
         print("This is the out put from the NN Class",self.output)
@@ -217,7 +205,7 @@ class NeuralNetwork:
         if self.loss == 0: #sum of squares
                 etotaldirv = (-1)*(yp-y)
         if self.loss == 1: #binary cross entropy
-                etotaldirv = -(y/yp)+((1-y)/(1-yp))      # I think this is correct not entirely sure
+                etotaldirv = -(y/yp)+((1-y)/(1-yp))
 
         return etotaldirv
         print('lossderiv')
@@ -228,22 +216,18 @@ class NeuralNetwork:
         self.output = self.calculate(x)
         print("This is the output of FF NN",self.output)
         print("Feed forward has completed")
-        #finding the E total of the network 
-        #print("I:",i)
-        #while (i>=0):
-        #    self.etotaldirv.insert(i,self.lossderiv(y[i],self.output[i])) 
-        #    print(self.etotaldirv)
-        #    self.network[i].calcwdeltas(self.etotaldirv)
+
+        lossdirv = self.lossderiv(yp, y)
+
         for x in range(len(yp)):
             self.etotaldirv.insert(x,self.lossderiv(y[x],self.output[x])) 
     
-
+        wdeltas = self.etotaldirv
         for x in range(len(self.network)-1, -1, -1):
             #print("=================",np.multiply(self.etotaldirv, self.actderiv[x]))
-            self.network[x].calcwdeltas(self.etotaldirv)
+            wdeltas = self.network[x].calcwdeltas(wdeltas)
             
-        ######################
-        # stopping here my brain hurts
+        return lossdirv
         print('train')
 
 if __name__=="__main__":
