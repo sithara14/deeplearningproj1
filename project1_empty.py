@@ -1,6 +1,6 @@
 
 import numpy as np
-import sys,random, math
+import sys, math
 """
 For this entire file there are a few constants:
 activation:
@@ -215,6 +215,11 @@ class NeuralNetwork:
         if self.loss == 0: #sum of squares
             etotaldirv = (-1)*(y-yp)
         if self.loss == 1: #binary cross entropy
+            if (yp == 0):
+                etotaldirv = -(y) + ((1 - y) / (1 - yp))
+            elif (yp == 1):
+                etotaldirv = -(y/yp) + ((1 - y) / (1))
+            else:
                 etotaldirv = -(y/yp)+((1-y)/(1-yp))
 
         return etotaldirv
@@ -267,7 +272,7 @@ if __name__=="__main__":
         print('learn and')
 
         lr = float(sys.argv[1])
-        network = NeuralNetwork(1, [1], 2, [0], 0, lr, None)
+        network = NeuralNetwork(1, [1], 2, [1], 1, lr, None)
 
         for i in range(1500):
             network.train([0, 0], np.array([0]))
@@ -289,12 +294,14 @@ if __name__=="__main__":
         print('learn xor')
 
         lr = float(sys.argv[1])
-        network = NeuralNetwork(1, [1], 2, [0], 0, lr, None)
+
+        #single perceptron
+        network = NeuralNetwork(1, [1], 2, [1], 1, lr, None)
 
         for i in range(1500):
             network.train([0, 0], np.array([0]))
-            network.train([1, 0], np.array([0]))
-            network.train([0, 1], np.array([0]))
+            network.train([1, 0], np.array([1]))
+            network.train([0, 1], np.array([1]))
             network.train([1, 1], np.array([1]))
 
         print('After training: Single Perceptron')
@@ -306,3 +313,24 @@ if __name__=="__main__":
         for i in range(len(network.network)):
             for j in range(len(network.network[i].layer)):
                 print(f"    Layer {i + 1} Neuron {j + 1} weights: {[round(w, 2) for w in network.network[i].layer[j].weights]}")
+
+
+        # one hidden layer
+        network = NeuralNetwork(2, [1,1], 2, [0,1], 1, lr, None)
+
+        for i in range(150):
+            network.train([0, 0], np.array([0]))
+            network.train([1, 0], np.array([1]))
+            network.train([0, 1], np.array([1]))
+            network.train([1, 1], np.array([1]))
+
+        print('After training: One Hidden Layer')
+        print(f"    0 and 0: {round(network.calculate([0, 0])[0])}")
+        print(f"    1 and 0: {round(network.calculate([1, 0])[0])}")
+        print(f"    0 and 1: {round(network.calculate([0, 1])[0])}")
+        print(f"    1 and 1: {round(network.calculate([1, 1])[0])}")
+
+        for i in range(len(network.network)):
+            for j in range(len(network.network[i].layer)):
+                print(
+                    f"    Layer {i + 1} Neuron {j + 1} weights: {[round(w, 2) for w in network.network[i].layer[j].weights]}")
