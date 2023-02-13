@@ -79,6 +79,8 @@ class Neuron:
 
         for i in range(len(self.input)):
             self.gradient.insert(i,wtimesdelta * self.activationderivative() * self.input[i])
+        # for bias
+        self.gradient.append(wtimesdelta * self.activationderivative() * 1)
 
         #print("weights",weights)
         #print("wtimesdelta:",wtimesdelta)
@@ -88,7 +90,7 @@ class Neuron:
     
     #Simply update the weights using the partial derivatives and the learning weight
     def updateweight(self):
-        for x in range(len(self.weights) - 1):
+        for x in range(len(self.weights)):
             self.weights[x] = self.weights[x] - self.lr * self.gradient[x]
         #print('updateweight', self.weights)
 
@@ -170,10 +172,12 @@ class NeuralNetwork:
         self.output =[]
         if weights is not None:
             for i in range(numOfLayers):
-                self.network.insert(i,FullyConnected(numOfNeurons[i], activation[i], inputSize[i], lr, weights[i]))
+                self.network.insert(i,FullyConnected(numOfNeurons[i], activation[i], self.input_num, lr, weights[i]))
+                self.input_num = numOfNeurons[i]
         else:
             for i in range(numOfLayers):
-                self.network.insert(i,FullyConnected(numOfNeurons[i], activation[i], inputSize[i], lr))
+                self.network.insert(i,FullyConnected(numOfNeurons[i], activation[i], self.input_num, lr))
+                self.input_num = numOfNeurons[i]
 
         #print('constructor complete')
     
@@ -191,15 +195,17 @@ class NeuralNetwork:
         
     #Given a predicted output and ground truth output simply return the loss (depending on the loss function)
     def calculateloss(self,yp,y):
+        self.eTotal = 0
         if self.loss == 0: #sum of squares
-            for i in range(len(yp)):
-                self.eTotal +=(.5)*(yp[i]-y[i])**2
+            for i in range(len(y)):
+                self.eTotal +=(.5)*((y[i]-yp[i])**2)
             #self.eTotal = (0.5)*(np.sum((np.subtract(yp - y))^2))
         if self.loss == 1: #binary cross entropy
             sum=0
             for i in range(len(y)-1):
-                sum += y[i] * np.log(yp[i]) + (1-y[i])*np.log(1-yp[i])
+                sum += -(y[i] * np.log(yp[i]) + (1-y[i])*np.log(1-yp[i]))
             self.eTotal = -(sum)/len(y)
+        return self.eTotal
         #print("this is the etotal",self.eTotal)
         
         #print('calculate')
@@ -207,7 +213,7 @@ class NeuralNetwork:
     #Given a predicted output and ground truth output simply return the derivative of the loss (depending on the loss function)        
     def lossderiv(self,yp,y):
         if self.loss == 0: #sum of squares
-                etotaldirv = (-1)*(yp-y)
+            etotaldirv = (-1)*(y-yp)
         if self.loss == 1: #binary cross entropy
                 etotaldirv = -(y/yp)+((1-y)/(1-yp))
 
@@ -220,17 +226,16 @@ class NeuralNetwork:
         self.output = self.calculate(x)
         #print("This is the output of FF NN",self.output)
         #print("Feed forward has completed")
+        loss = self.calculateloss(self.output[0:len(y)],y)
 
-        lossdirv = self.lossderiv(yp, y)
-
-        for x in range(len(yp)):
-            self.etotaldirv.insert(x,self.lossderiv(y[x],self.output[x])) 
+        for x in range(len(y)):
+            self.etotaldirv.insert(x,self.lossderiv(self.output[x],y[x]))
     
         wdeltas = self.etotaldirv
         for x in range(len(self.network)-1, -1, -1):
             wdeltas = self.network[x].calcwdeltas(wdeltas)
             
-        return lossdirv
+        return loss
         print('train')
 
 if __name__=="__main__":
@@ -242,19 +247,62 @@ if __name__=="__main__":
         w=np.array([[[.15,.2,.35],[.25,.3,.35]],[[.4,.45,.6],[.5,.55,.6]]])
         x=np.array([0.05,0.1])
         yp=np.array([0.01,0.99])
+        lr= float(sys.argv[1])
         #setting up the neural network
-        network=NeuralNetwork(2,[2,2],[2,2],[1,1],0,float(sys.argv[1]),w)
+        network=NeuralNetwork(2,[2,2], 2,[1,1],0,lr,w)
         #training neural network
         network.train(x,yp)
 
+        print(f"    Output: {[round(w, 3) for w in network.calculate(x)[0:len(yp)]]}")
+        print(f"    Total Loss: {network.calculateloss(network.calculate(x)[0:len(yp)],yp)}")
         print(f"Updated Weights:")
         for i in range(len(network.network)):
+            print(f"    Layer {i + 1}:")
             for j in range(len(network.network[i].layer)):
-                print(f"    Layer {i} Neuron {j} weights: {network.network[i].layer[j].weights}")
+                print(f"        Neuron {j + 1}: {network.network[i].layer[j].weights}")
+
+
 
     elif(sys.argv[2]=='and'):
-        
         print('learn and')
-        
+
+        lr = float(sys.argv[1])
+        network = NeuralNetwork(1, [1], 2, [0], 0, lr, None)
+
+        for i in range(1500):
+            network.train([0, 0], np.array([0]))
+            network.train([1, 0], np.array([0]))
+            network.train([0, 1], np.array([0]))
+            network.train([1, 1], np.array([1]))
+
+        print('After training:')
+        print(f"    0 and 0: {round(network.calculate([0, 0])[0])}")
+        print(f"    1 and 0: {round(network.calculate([1, 0])[0])}")
+        print(f"    0 and 1: {round(network.calculate([0, 1])[0])}")
+        print(f"    1 and 1: {round(network.calculate([1, 1])[0])}")
+
+        for i in range(len(network.network)):
+            for j in range(len(network.network[i].layer)):
+                print(f"    Layer {i + 1} Neuron {j + 1} weights: {[round(w, 2) for w in network.network[i].layer[j].weights]}")
+
     elif(sys.argv[2]=='xor'):
         print('learn xor')
+
+        lr = float(sys.argv[1])
+        network = NeuralNetwork(1, [1], 2, [0], 0, lr, None)
+
+        for i in range(1500):
+            network.train([0, 0], np.array([0]))
+            network.train([1, 0], np.array([0]))
+            network.train([0, 1], np.array([0]))
+            network.train([1, 1], np.array([1]))
+
+        print('After training: Single Perceptron')
+        print(f"    0 and 0: {round(network.calculate([0, 0])[0])}")
+        print(f"    1 and 0: {round(network.calculate([1, 0])[0])}")
+        print(f"    0 and 1: {round(network.calculate([0, 1])[0])}")
+        print(f"    1 and 1: {round(network.calculate([1, 1])[0])}")
+
+        for i in range(len(network.network)):
+            for j in range(len(network.network[i].layer)):
+                print(f"    Layer {i + 1} Neuron {j + 1} weights: {[round(w, 2) for w in network.network[i].layer[j].weights]}")
