@@ -1,5 +1,5 @@
-
 import numpy as np
+from matplotlib import pyplot as plt
 import sys, math
 """
 For this entire file there are a few constants:
@@ -228,10 +228,10 @@ class NeuralNetwork:
     #Given a single input and desired output preform one step of backpropagation (including a forward pass, getting the derivative of the loss, and then calling calcwdeltas for layers with the right values         
     def train(self,x,y):
         #print("starting the NN Calculate")
-        self.output = self.calculate(x)
+        output = self.calculate(x)
         #print("This is the output of FF NN",self.output)
         #print("Feed forward has completed")
-        loss = self.calculateloss(self.output[0:len(y)],y)
+        loss = self.calculateloss(output[0:len(y)],y)
 
         for x in range(len(y)):
             self.etotaldirv.insert(x,self.lossderiv(self.output[x],y[x]))
@@ -245,7 +245,32 @@ class NeuralNetwork:
 
 if __name__=="__main__":
     if (len(sys.argv)<2):
-        print('a good place to test different parts of your code')
+
+
+        x = np.array([0.05, 0.1])
+        yp = np.array([0.01, 0.99])
+        lr = np.linspace(0.1, 0.7, 14)
+        lossPerEpoch = []
+
+        for l in lr:
+
+            w = np.array([[[.15, .2, .35], [.25, .3, .35]], [[.4, .45, .6], [.5, .55, .6]]])
+
+            network = NeuralNetwork(2,[2,2],2,[1,1],0,l,w)
+            lossPerEpochForEachlr = []
+            for i in range(250):
+                lossPerEpochForEachlr.append(network.train(x, yp))
+            lossPerEpoch.append(lossPerEpochForEachlr)
+
+        # Plot the losses for each learning rate as separate lines on the same plot
+
+        for i in range(len(lossPerEpoch)):
+            plt.plot(lossPerEpoch[i], label=f'Learning Rate: {lr[i]:.2f}')
+        plt.legend()
+        plt.xlabel('Number of Epochs')
+        plt.ylabel('Total Loss')
+        plt.title('Total Loss vs Number of Epochs')
+        plt.show()
         
     elif (sys.argv[2]=='example'):
         print('run example from class (single step)')
@@ -272,7 +297,7 @@ if __name__=="__main__":
         print('learn and')
 
         lr = float(sys.argv[1])
-        network = NeuralNetwork(1, [1], 2, [1], 1, lr, None)
+        network = NeuralNetwork(1, [1], 2, [0], 0, lr, None)
 
         for i in range(1500):
             network.train([0, 0], np.array([0]))
@@ -316,21 +341,21 @@ if __name__=="__main__":
 
 
         # one hidden layer
-        network = NeuralNetwork(2, [1,1], 2, [0,1], 1, lr, None)
+        network1 = NeuralNetwork(2, [1,1], 2, [0,1], 1, lr, None)
 
         for i in range(150):
-            network.train([0, 0], np.array([0]))
-            network.train([1, 0], np.array([1]))
-            network.train([0, 1], np.array([1]))
-            network.train([1, 1], np.array([1]))
+            network1.train([0, 0], np.array([0]))
+            network1.train([1, 0], np.array([1]))
+            network1.train([0, 1], np.array([1]))
+            network1.train([1, 1], np.array([1]))
 
         print('After training: One Hidden Layer')
-        print(f"    0 and 0: {round(network.calculate([0, 0])[0])}")
-        print(f"    1 and 0: {round(network.calculate([1, 0])[0])}")
-        print(f"    0 and 1: {round(network.calculate([0, 1])[0])}")
-        print(f"    1 and 1: {round(network.calculate([1, 1])[0])}")
+        print(f"    0 and 0: {round(network1.calculate([0, 0])[0])}")
+        print(f"    1 and 0: {round(network1.calculate([1, 0])[0])}")
+        print(f"    0 and 1: {round(network1.calculate([0, 1])[0])}")
+        print(f"    1 and 1: {round(network1.calculate([1, 1])[0])}")
 
         for i in range(len(network.network)):
-            for j in range(len(network.network[i].layer)):
+            for j in range(len(network1.network[i].layer)):
                 print(
-                    f"    Layer {i + 1} Neuron {j + 1} weights: {[round(w, 2) for w in network.network[i].layer[j].weights]}")
+                    f"    Layer {i + 1} Neuron {j + 1} weights: {[round(w, 2) for w in network1.network[i].layer[j].weights]}")
